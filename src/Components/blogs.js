@@ -6,7 +6,7 @@ const Blog = () => {
 
     return (
         <>
-           <h1 className="text-center" style={{margin:'35px 0px',marginTop:'80px'}}>Tech Blogs</h1>
+           <h1 id="articles" className="text-center" style={{margin:'35px 0px',marginTop:'80px'}}>Tech Blogs</h1>
             <div className="container">
 
                 {loading && <p role="status">Loading articles...</p>}
