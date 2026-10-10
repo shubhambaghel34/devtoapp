@@ -1,4 +1,4 @@
-# DEV.to Articles App
+# DevToApp
 
 A React app that displays published DEV.to articles for the configured account. Article data is fetched through a server-side API route so the DEV.to API key is not exposed in the browser.
 
