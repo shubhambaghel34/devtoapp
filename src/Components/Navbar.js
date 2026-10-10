@@ -7,7 +7,7 @@ const  Navbar=(props)=>{
 <nav className="navbar navbar-dark bg-dark fixed-top navbar-expand-lg ">
 
   <div className="container-fluid">
-    <a className="navbar-brand" href="#">CodeBlend</a>
+    <a className="navbar-brand" href="#">DevToApp</a>
     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span className="navbar-toggler-icon"></span>
     </button>

@@ -1,70 +1,54 @@
-# Getting Started with Create React App
+# DevToApp
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A React app that displays published DEV.to articles for the configured account. Article data is fetched through a server-side API route so the DEV.to API key is not exposed in the browser.
 
-## Available Scripts
+## Local Setup
 
-In the project directory, you can run:
+Install dependencies:
 
-### `npm start`
+```sh
+npm install
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Copy `.env.example` to `.env.local` and replace the placeholder with your DEV.to API key:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```env
+DEVTO_API_KEY=your_devto_api_key
+```
 
-### `npm test`
+`.env.local` is ignored by Git. Do not put the key in React source code or commit it.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Start the app:
 
-### `npm run build`
+```sh
+npm start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Open [http://localhost:3000](http://localhost:3000). The Create React App development middleware in `src/setupProxy.js` handles `/api/articles/me/all` locally and calls DEV.to with the server-side key.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## API
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The app's custom hook, `src/hooks/useDevToArticles.js`, requests the same-origin URL in every environment:
 
-### `npm run eject`
+```text
+GET /api/articles/me/all
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+In production, Vercel serves this route from `api/articles/me/all.js`. The function calls `https://dev.to/api/articles/me/all`, returns published articles, and does not cache the response. The browser never calls DEV.to directly, so the API key is not part of the client bundle and no deployment-specific API hostname is needed.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Deploy to Vercel
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+1. Import this repository into Vercel and leave the project root at the repository root.
+2. Vercel uses `vercel.json` to run `npm run build` and publish the `build/` directory. The `api/` directory is deployed as a serverless function.
+3. In **Project Settings → Environment Variables**, add `DEVTO_API_KEY` for Production, Preview, and Development as needed.
+4. Redeploy after adding or changing the key. Open the deployed app URL; its `/api/articles/me/all` request is routed to the Vercel function on the same domain.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Do not prefix the key with `REACT_APP_`; that would expose it in the client bundle. Never commit `.env.local` or put the key in frontend source code.
 
-## Learn More
+## Scripts
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- `npm start` starts the development server. The legacy OpenSSL provider is enabled for compatibility between this project's Create React App 4 / Webpack 4 toolchain and newer Node.js versions.
+- `npm test` runs the React test suite.
+- `npm run build` creates the production bundle in `build/`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The Vercel API route requires Vercel's runtime when testing it independently. The local React development server uses `src/setupProxy.js` to provide the same route.

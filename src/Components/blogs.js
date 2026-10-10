@@ -1,39 +1,25 @@
 import Bloglist from "./Bloglist";
-import { useEffect, useState } from 'react'
+import useDevToArticles from '../hooks/useDevToArticles';
 
 const Blog = () => {
-
-    URL = "https://dev.to/api/articles?username=shubham57396755";
-
-    const [blogdata, setBlogdata] = useState([]);
-    const fetchData = async () => {
-        const response = await fetch(URL);
-        const data = await response.json();
-        console.log(data);
-        //console.log(blogdata);
-        setBlogdata(data);
-
-    }
-
-
-    useEffect(() => {
-        fetchData();
-    }, [])
-
+    const { articles: blogdata, loading, error } = useDevToArticles();
 
     return (
         <>
            <h1 className="text-center" style={{margin:'35px 0px',marginTop:'80px'}}>Tech Blogs</h1>
             <div className="container">
 
+                {loading && <p role="status">Loading articles...</p>}
+                {error && <p role="alert">{error}</p>}
+
                 <div >
                     <div className="row">
                         {blogdata.map((element) => (
 
-                            <div className="col-md-4">
+                            <div className="col-md-4" key={element.id}>
                                 <Bloglist title={element.title}
                                     description={element.description}
-                                    imgUrl={element.social_image}
+                                    imgUrl={element.cover_image || element.social_image}
                                     //blogurl={props.blogurl}
                                      author={element.twitter_username}
                                      date={element.published_at}
